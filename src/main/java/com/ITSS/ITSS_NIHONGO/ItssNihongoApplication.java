@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ItssNihongoApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ItssNihongoApplication.class, args);
+
+        SpringApplication.run(ItssNihongoApplication.class, args);
+        System.out.println("ItssNihongoApplication started successfully!");
 	}
 
 }
