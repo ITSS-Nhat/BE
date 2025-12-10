@@ -8,4 +8,5 @@ public class DishResponse {
     public String name;
     public String imageUrl;
     public float rate;
+    public String description;
 }

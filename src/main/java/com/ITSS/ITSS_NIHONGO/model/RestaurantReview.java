@@ -27,12 +27,12 @@ public class RestaurantReview {
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
-    @Column(name = "rating", nullable = false)
-    private int rating;
+    @Column(name = "rating", nullable = true)
+    private float rating;
 
     @Column(name = "comment", nullable = true)
     private String comment;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = true)
     private LocalDateTime createdAt;
 }

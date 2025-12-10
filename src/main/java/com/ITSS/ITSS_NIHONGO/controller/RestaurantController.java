@@ -45,4 +45,25 @@ public class RestaurantController {
             return ResponseEntity.status(500).body(map);
         }
     }
+
+    @GetMapping("/restaurant-detail")
+    public ResponseEntity<Map<String, Object>> getRestaurantDetail(@RequestParam int id) {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            RestaurantResponse restaurantDetail = restaurantService.getRestaurantRecentlyList(id);
+            if (restaurantDetail == null) {
+                map.put("status", "fail");
+                map.put("message", "Restaurant not found");
+                return ResponseEntity.status(404).body(map);
+            } else {
+                map.put("status", "success");
+                map.put("data", restaurantDetail);
+                return ResponseEntity.ok(map);
+            }
+        } catch (Exception e) {
+            map.put("status", "error");
+            map.put("message", "An error occurred while fetching restaurant details");
+            return ResponseEntity.status(500).body(map);
+        }
+    }
 }

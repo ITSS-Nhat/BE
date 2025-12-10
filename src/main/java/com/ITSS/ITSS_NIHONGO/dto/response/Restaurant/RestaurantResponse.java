@@ -10,4 +10,10 @@ public class RestaurantResponse {
     public int minprice;
     public int maxprice;
     public String imageUrl;
+    public String address;
+    public String phone;
+    public String description;
+    public float rate;
+    public String openTime;
+    public  String closeTime;
 }

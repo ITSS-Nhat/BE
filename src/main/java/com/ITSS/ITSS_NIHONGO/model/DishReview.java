@@ -28,7 +28,7 @@ public class DishReview {
     private Users user;
 
     @Column(name = "rating", nullable = false)
-    private int rating;
+    private float rate;
 
     @Column(name = "comment", nullable = true)
     private String comment;

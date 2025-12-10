@@ -1,6 +1,9 @@
 package com.ITSS.ITSS_NIHONGO.service;
 
 
+import com.ITSS.ITSS_NIHONGO.dto.request.User.UpdatePassword;
+import com.ITSS.ITSS_NIHONGO.dto.request.User.UpdateProfile;
+import com.ITSS.ITSS_NIHONGO.dto.response.User.Profile;
 import com.ITSS.ITSS_NIHONGO.model.Users;
 import com.ITSS.ITSS_NIHONGO.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +46,19 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
+    public Profile getUserProfile(int userId) {
+        Optional<Users> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            Users user = userOptional.get();
+            return Profile.builder()
+                    .name(user.getName())
+                    .national(user.getNational())
+                    .email(user.getUsername())
+                    .avatar(user.getAvatar())
+                    .build();
+        }
+        return null;
+    }
 
     public boolean registerUser(String name, String password, String username, String national) {
        Optional<Users> userOptional = userRepository.findByUsername(username);
@@ -59,16 +75,39 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
         return true;
     }
-//
-//    public boolean updatePassword(String username, String newPassword) {
-//        Optional<Users> userOptional = userRepository.findByUsername(username);
-//        if (userOptional.isPresent()) {
-//            Users user = userOptional.get();
-//            user.setPassword(passwordEncoder.encode(newPassword));
-//            userRepository.save(user);
-//            return true;
-//        }
-//        return false;
-//    }
 
+    public boolean updatePassword(int userId, UpdatePassword updatePassword) {
+        Optional<Users> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            Users user = userOptional.get();
+            if(passwordEncoder.matches(updatePassword.oldPassword, user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(updatePassword.newPassword));
+                userRepository.save(user);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean updateUserInfo(int userId, UpdateProfile updateProfile) {
+        Optional<Users> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            Users user = userOptional.get();
+            if (updateProfile.fullname != null) {
+                user.setName(updateProfile.fullname);
+            }
+            if (updateProfile.email != null) {
+                user.setUsername(updateProfile.email);
+            }
+            if (updateProfile.avatar != null) {
+                user.setAvatar(updateProfile.avatar);
+            }
+            if (updateProfile.nationality != null) {
+                user.setNational(updateProfile.nationality);
+            }
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
 }
