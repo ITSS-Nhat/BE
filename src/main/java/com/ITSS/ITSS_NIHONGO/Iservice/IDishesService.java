@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface IDishesService {
     List<DishResponse> getDishfamousList();
+    List<DishResponse> getAllDishfamousList();
 }

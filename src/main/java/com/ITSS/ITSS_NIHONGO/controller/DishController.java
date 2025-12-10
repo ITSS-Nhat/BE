@@ -38,4 +38,25 @@ public class DishController {
             return ResponseEntity.status(500).body(response);
         }
     }
+
+    @GetMapping("/disharmonious-all")
+    public ResponseEntity<Map<String, Object>> getAllDishFamousList() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<DishResponse> dishFamousList = dishService.getAllDishfamousList();
+            if (dishFamousList.isEmpty()) {
+                response.put("status", "fail");
+                response.put("message", "No famous dishes found");
+                return ResponseEntity.status(404).body(response);
+            } else {
+                response.put("status", "success");
+                response.put("data", dishFamousList);
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "An error occurred while fetching famous dishes");
+            return ResponseEntity.status(500).body(response);
+        }
+    }
 }

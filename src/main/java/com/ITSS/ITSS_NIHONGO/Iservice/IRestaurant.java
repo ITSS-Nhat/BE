@@ -5,4 +5,5 @@ import org.springframework.data.domain.Page;
 
 public interface IRestaurant {
     Page<RestaurantResponse> getRestaurantrecentlyList(int page, int size);
+    RestaurantResponse getRestaurantRecentlyList(int id);
 }

@@ -9,4 +9,7 @@ public class FavouriteResponse {
     public String restaurantname;
     public int distance;
     public String imageUrl;
+
+    public String description;
+    public float rate;
 }

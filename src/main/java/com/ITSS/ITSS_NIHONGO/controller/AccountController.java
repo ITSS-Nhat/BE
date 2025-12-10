@@ -4,6 +4,8 @@ package com.ITSS.ITSS_NIHONGO.controller;
 import com.ITSS.ITSS_NIHONGO.config.JwtService;
 import com.ITSS.ITSS_NIHONGO.dto.request.User.LoginRequest;
 import com.ITSS.ITSS_NIHONGO.dto.request.User.RegisterRequest;
+import com.ITSS.ITSS_NIHONGO.dto.request.User.UpdatePassword;
+import com.ITSS.ITSS_NIHONGO.dto.request.User.UpdateProfile;
 import com.ITSS.ITSS_NIHONGO.repository.UserRepository;
 import com.ITSS.ITSS_NIHONGO.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,14 +54,20 @@ public class AccountController {
 
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> getCurrentUser(HttpServletRequest request) {
-        // Lấy token từ header để extract userId
+        Map<String, Object> response = new HashMap<>();
         String token = request.getHeader("Authorization").substring(7);
         Integer userId = jwtService.extractUserId(token);
-
-        return ResponseEntity.ok(Map.of(
-                "userId", userId,
-                "message", "User information retrieved successfully"
-        ));
+        try {
+            var user = userService.getUserProfile(userId);
+            if (user != null) {
+                response.put("data", user);
+            } else {
+                response.put("message", "User not found");
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping("/auth/register")
@@ -79,18 +87,39 @@ public class AccountController {
         }
     }
 
-//    @PostMapping("/updatePassword")
-//    public ResponseEntity<String> updatePassword(@RequestBody LoginRequest request) {
-//        try {
-//            boolean isUpdated = userService.updatePassword(request.username, request.password);
-//            if (isUpdated) {
-//                return ResponseEntity.ok("Password updated successfully");
-//            } else {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating password");
-//        }
-//    }
+    @PutMapping("/updatePassword")
+    public ResponseEntity<Map<String,Object>> updatePassword(HttpServletRequest request ,@RequestBody UpdatePassword updatePassword) {
+        Map<String, Object> response = new HashMap<>();
+        String token = request.getHeader("Authorization").substring(7);
+        Integer userId = jwtService.extractUserId(token);
+        try {
+            boolean isUpdated = userService.updatePassword(userId, updatePassword);
+            if (isUpdated) {
+                response.put("message", "Password updated successfully");
+            } else {
+                response.put("message", "Password update failed");
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
+    @PutMapping("/updateUser" )
+    public ResponseEntity<Map<String,Object>> updateUser(HttpServletRequest request ,@RequestBody UpdateProfile updateUser) {
+        Map<String, Object> response = new HashMap<>();
+        String token = request.getHeader("Authorization").substring(7);
+        Integer userId = jwtService.extractUserId(token);
+        try {
+            boolean isUpdated = userService.updateUserInfo(userId, updateUser);
+            if (isUpdated) {
+                response.put("message", "User information updated successfully");
+            } else {
+                response.put("message", "User information update failed");
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

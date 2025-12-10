@@ -31,4 +31,20 @@ public class DishService implements IDishesService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<DishResponse> getAllDishfamousList() {
+        List<Dishes> dishes = dishRepository.findAllByOrderByRateDesc();
+        if (dishes.isEmpty()) {
+            return null;
+        }
+        return dishes.stream().map(dish -> DishResponse.builder()
+                        .id(dish.getId())
+                        .name(dish.getName())
+                        .imageUrl(dish.getImageUrl())
+                        .rate(dish.getRate())
+                        .description(dish.getDescription())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

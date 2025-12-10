@@ -24,4 +24,7 @@ public class DishRestaurant {
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    @Column(name = "price", nullable = false)
+    private float price;
 }
