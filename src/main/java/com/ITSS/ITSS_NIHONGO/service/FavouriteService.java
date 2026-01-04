@@ -47,7 +47,7 @@ public class FavouriteService implements IFavourite {
 
     @Override
     public List<FavouriteResponse> getAllFavourite(int userId) {
-        List<Favourite> favourites = favouriteRepository.findByDish_IdOrderByDish_RateDesc(userId);
+        List<Favourite> favourites = favouriteRepository.findByUser_IdOrderByDish_RateDesc(userId);
         if (favourites.isEmpty()) {
             return null;
         }
