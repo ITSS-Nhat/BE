@@ -28,22 +28,24 @@ public class DishService implements IDishesService {
 
     @Override
     public List<DishResponse> getDishfamousList() {
-        List<Dishes> dishes = dishRepository.findTop3ByOrderByRateDesc(PageRequest.of(0,3));
+        List<Dishes> dishes = dishRepository.findAll();
         if (dishes.isEmpty()) {
             return null;
         }
-        return dishes.stream().map(dish ->{
-            Long countLike = favouriteRepository.countByDish_Id(dish.getId());
-            int likes = countLike != null ? countLike.intValue() : 0;
-            return DishResponse.builder()
-                    .id(dish.getId())
-                    .name(dish.getName())
-                    .imageUrl(dish.getImageUrl())
-                    .likes(likes)
-                    .description(dish.getDescription())
-                    .build();
-            }
-        )
+        return dishes.stream()
+                .map(dish -> {
+                    Long countLike = favouriteRepository.countByDish_Id(dish.getId());
+                    int likes = countLike != null ? countLike.intValue() : 0;
+                    return DishResponse.builder()
+                            .id(dish.getId())
+                            .name(dish.getName())
+                            .imageUrl(dish.getImageUrl())
+                            .likes(likes)
+                            .description(dish.getDescription())
+                            .build();
+                })
+                .sorted((d1, d2) -> Integer.compare(d2.getLikes(), d1.getLikes()))
+                .limit(3)
                 .collect(Collectors.toList());
     }
 

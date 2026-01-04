@@ -6,7 +6,6 @@ import lombok.Builder;
 public class FavouriteResponse {
     public int id;
     public String dishesname;
-    public String restaurantname;
     public int distance;
     public String imageUrl;
 

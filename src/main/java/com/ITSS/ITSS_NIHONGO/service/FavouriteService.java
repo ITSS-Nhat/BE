@@ -35,13 +35,18 @@ public class FavouriteService implements IFavourite {
         if (favourites.isEmpty()) {
             return null;
         }
-        return favourites.stream().map(favouriteItem -> FavouriteResponse.builder()
-                        .id(favouriteItem.getId())
-                        .dishesname(favouriteItem.getDish().getName())
-                        .imageUrl(favouriteItem.getDish().getImageUrl())
-                        .distance(favouriteItem.getRestaurant().getDistance())
-                        .restaurantname(favouriteItem.getRestaurant().getName())
-                        .build())
+        return favourites.stream()
+                .map(favouriteItem -> {
+                    FavouriteResponse.FavouriteResponseBuilder builder = FavouriteResponse.builder()
+                            .id(favouriteItem.getId());
+
+                    if (favouriteItem.getDish() != null) {
+                        builder.dishesname(favouriteItem.getDish().getName())
+                               .imageUrl(favouriteItem.getDish().getImageUrl());
+                    }
+
+                    return builder.build();
+                })
                 .toList();
     }
 
@@ -51,17 +56,20 @@ public class FavouriteService implements IFavourite {
         if (favourites.isEmpty()) {
             return null;
         }
-        return favourites.stream().map(favouriteItem -> {
-            Long likesCount = favouriteRepository.countByDish_Id(favouriteItem.getDish().getId());
-            int likes = likesCount != null ? likesCount.intValue() : 0;
-            return FavouriteResponse.builder()
-                    .id(favouriteItem.getId())
-                    .dishesname(favouriteItem.getDish().getName())
-                    .imageUrl(favouriteItem.getDish().getImageUrl())
-                    .likes(likes)
-                    .description(favouriteItem.getDish().getDescription())
-                    .build();
-        }).toList();
+        return favourites.stream()
+                .filter(favouriteItem -> favouriteItem.getDish() != null)
+                .map(favouriteItem -> {
+                    Long likesCount = favouriteRepository.countByDish_Id(favouriteItem.getDish().getId());
+                    int likes = likesCount != null ? likesCount.intValue() : 0;
+                    return FavouriteResponse.builder()
+                            .id(favouriteItem.getId())
+                            .dishesname(favouriteItem.getDish().getName())
+                            .imageUrl(favouriteItem.getDish().getImageUrl())
+                            .likes(likes)
+                            .description(favouriteItem.getDish().getDescription())
+                            .build();
+                })
+                .toList();
     }
 
     @Override

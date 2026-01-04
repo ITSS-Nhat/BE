@@ -1,8 +1,10 @@
 package com.ITSS.ITSS_NIHONGO.dto.response.Dishes;
 
 import lombok.Builder;
+import lombok.Data;
 
 @Builder
+@Data
 public class DishResponse {
     public int id;
     public String name;
