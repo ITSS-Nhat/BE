@@ -21,4 +21,6 @@ public interface DishRestaurantRepository extends JpaRepository<DishRestaurant, 
            "LOWER(dr.dish.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(dr.restaurant.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<DishRestaurant> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    Optional<DishRestaurant> findByDishIdAndRestaurantId(int dishId, int restaurantId);
 }

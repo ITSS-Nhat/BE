@@ -45,6 +45,8 @@ public class FavouriteService implements IFavourite {
                         builder.dishId(favouriteItem.getDish().getId())
                                .dishesname(favouriteItem.getDish().getName())
                                .imageUrl(favouriteItem.getDish().getImageUrl());
+                    } if (favouriteItem.getRestaurant() != null) {
+                        builder.restaurantName(favouriteItem.getRestaurant().getName());
                     }
 
                     return builder.build();

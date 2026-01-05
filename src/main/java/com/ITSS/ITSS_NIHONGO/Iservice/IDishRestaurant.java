@@ -13,6 +13,7 @@ public interface IDishRestaurant {
     Page<DishRestaurantAll> getDishRestaurantAllList(int page, int size);
     List<DishResponse> getDishRestaurantList(int restaurantId);
     DishRestaurantDetail getDishRestaurantDetail(int id);
+    DishRestaurantDetail getDishRestaurantDetail(int dishId, int restaurantId);
     List<RestaurantByDish> getRestaurantByDish(int dishId, int dishRestaurantId);
     Page<SearchResult> searchDishOrRestaurant(String keyword, int page, int size);
 }

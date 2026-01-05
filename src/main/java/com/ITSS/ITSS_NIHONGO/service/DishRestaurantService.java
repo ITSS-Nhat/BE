@@ -100,6 +100,31 @@ public class DishRestaurantService implements IDishRestaurant {
     }
 
     @Override
+    public DishRestaurantDetail getDishRestaurantDetail(int dishId, int restaurantId) {
+        DishRestaurant dishRestaurant = dishRestaurantRepository.findByDishIdAndRestaurantId(dishId,restaurantId).orElse(null);
+        if (dishRestaurant == null) {
+            return null;
+        }
+        Long countLike = favouriteRepository.countByDish_Id(dishRestaurant.getDish().getId());
+        int likes = countLike != null ? countLike.intValue() : 0;
+
+        DishRestaurantDetail detail = new DishRestaurantDetail();
+        detail.id = dishRestaurant.getId();
+        detail.dishId = dishRestaurant.getDish().getId();
+        detail.restaurantId = dishRestaurant.getRestaurant().getId();
+        detail.dishesname = dishRestaurant.getDish().getName();
+        detail.restaurantname = dishRestaurant.getRestaurant().getName();
+        detail.distance = dishRestaurant.getRestaurant().getDistance();
+        detail.imageUrlDish = dishRestaurant.getDish().getImageUrl();
+        detail.imageUrlRestaurant = dishRestaurant.getRestaurant().getImageUrl();
+        detail.price = dishRestaurant.getPrice();
+        detail.description = dishRestaurant.getDish().getDescription();
+        detail.ingredients = dishRestaurant.getDish().getIngredients();
+        detail.countLike = likes;
+        return detail;
+    }
+
+    @Override
     public List<RestaurantByDish> getRestaurantByDish(int dishId, int dishRestaurantId) {
         List<DishRestaurant> dishRestaurants = dishRestaurantRepository.findByDish_Id(dishId);
         if (dishRestaurants.isEmpty()) {

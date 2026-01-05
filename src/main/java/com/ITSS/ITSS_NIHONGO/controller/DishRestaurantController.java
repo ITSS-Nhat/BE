@@ -85,6 +85,28 @@ public class DishRestaurantController {
         }
     }
 
+    @GetMapping("/dish-restaurant-detail-2")
+    public ResponseEntity<Map<String, Object>> getDishRestaurantDetail2(@RequestParam int dishId,
+                                                                       @RequestParam int restaurantId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            var dishRestaurantDetail = dishRestaurantService.getDishRestaurantDetail(dishId, restaurantId);
+            if (dishRestaurantDetail == null) {
+                response.put("status", "fail");
+                response.put("message", "Dish-Restaurant association not found");
+                return ResponseEntity.status(404).body(response);
+            } else {
+                response.put("status", "success");
+                response.put("data", dishRestaurantDetail);
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "An error occurred while fetching dish-restaurant details");
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
     @GetMapping("/restaurant-by-dish" )
     public ResponseEntity<Map<String, Object>> getRestaurantByDish(@RequestParam int dishId,
                                                                    @RequestParam int dishRestaurantId) {
