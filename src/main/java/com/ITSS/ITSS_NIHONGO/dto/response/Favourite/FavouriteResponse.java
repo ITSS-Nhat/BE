@@ -5,11 +5,11 @@ import lombok.Builder;
 @Builder
 public class FavouriteResponse {
     public int id;
+    public int dishId;
     public String dishesname;
-    public String restaurantname;
     public int distance;
     public String imageUrl;
 
     public String description;
-    public float rate;
+    public int likes;
 }
