@@ -41,7 +41,8 @@ public class FavouriteService implements IFavourite {
                             .id(favouriteItem.getId());
 
                     if (favouriteItem.getDish() != null) {
-                        builder.dishesname(favouriteItem.getDish().getName())
+                        builder.dishId(favouriteItem.getDish().getId())
+                               .dishesname(favouriteItem.getDish().getName())
                                .imageUrl(favouriteItem.getDish().getImageUrl());
                     }
 
@@ -63,6 +64,7 @@ public class FavouriteService implements IFavourite {
                     int likes = likesCount != null ? likesCount.intValue() : 0;
                     return FavouriteResponse.builder()
                             .id(favouriteItem.getId())
+                            .dishId(favouriteItem.getDish().getId())
                             .dishesname(favouriteItem.getDish().getName())
                             .imageUrl(favouriteItem.getDish().getImageUrl())
                             .likes(likes)
