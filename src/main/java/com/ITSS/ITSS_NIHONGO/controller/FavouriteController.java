@@ -2,6 +2,7 @@ package com.ITSS.ITSS_NIHONGO.controller;
 
 import com.ITSS.ITSS_NIHONGO.config.JwtService;
 import com.ITSS.ITSS_NIHONGO.dto.request.Favourite.AddFavourite;
+import com.ITSS.ITSS_NIHONGO.dto.request.Favourite.DeleteFavorite;
 import com.ITSS.ITSS_NIHONGO.service.FavouriteService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -90,10 +91,13 @@ public class FavouriteController {
     }
 
     @DeleteMapping("/favourite")
-    public ResponseEntity<Map<String, Object>> deleteFavouriteById(@RequestParam int favouriteId) {
+    public ResponseEntity<Map<String, Object>> deleteFavouriteById(HttpServletRequest request,
+                                                                   @RequestBody DeleteFavorite deleteFavorite) {
         Map<String, Object> map = new HashMap<>();
+        String token = request.getHeader("Authorization").substring(7);
+        int userId = jwtService.extractUserId(token);
         try {
-            boolean isDeleted = favouriteService.deleteFavourite(favouriteId);
+            boolean isDeleted = favouriteService.deleteFavourite(userId,deleteFavorite);
             if (isDeleted) {
                 map.put("status", "success");
                 map.put("message", "Favourite deleted successfully");

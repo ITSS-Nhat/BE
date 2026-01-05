@@ -77,15 +77,15 @@ public class DishService implements IDishesService {
             return null;
         }
 
-        // Lấy nguyên liệu của món ăn cần so sánh
         String ingredientsStr = dish.get().getIngredients();
         if(ingredientsStr == null || ingredientsStr.trim().isEmpty()){
             return null;
         }
 
-        // Tách chuỗi thành danh sách nguyên liệu, loại bỏ khoảng trắng thừa
-        List<String> targetIngredients = java.util.stream.Stream.of(ingredientsStr.split(","))
+        List<String> targetIngredients = java.util.stream.Stream.of(ingredientsStr.split("[、,]")) // Tách cả 、 và ,
                 .map(String::trim)
+                .map(s -> s.replaceAll("[。]", "")) // Loại bỏ dấu chấm cuối
+                .map(String::toLowerCase)
                 .filter(s -> !s.isEmpty())
                 .toList();
 
@@ -93,32 +93,30 @@ public class DishService implements IDishesService {
             return null;
         }
 
-        int totalIngredients = targetIngredients.size();
+        System.out.println("Target ingredients: " + targetIngredients);
 
-        // Lấy tất cả món ăn
         List<Dishes> allDishes = dishRepository.findAll();
 
-        // Lọc các món có độ trùng khớp > 50%
         return allDishes.stream()
-                .filter(d -> d.getId() != dishId) // Loại bỏ món hiện tại
+                .filter(d -> d.getId() != dishId)
                 .filter(d -> d.getIngredients() != null && !d.getIngredients().trim().isEmpty())
                 .map(d -> {
-                    // Tách nguyên liệu của món đang xét
-                    List<String> currentIngredients = java.util.stream.Stream.of(d.getIngredients().split(","))
+                    List<String> currentIngredients = java.util.stream.Stream.of(d.getIngredients().split("[、,]"))
                             .map(String::trim)
+                            .map(s -> s.replaceAll("[。]", ""))
+                            .map(String::toLowerCase)
                             .filter(s -> !s.isEmpty())
                             .toList();
 
-                    // Đếm số nguyên liệu trùng khớp
+                    System.out.println("Comparing with dish " + d.getId() + ": " + currentIngredients);
+
                     long matchCount = targetIngredients.stream()
                             .filter(currentIngredients::contains)
                             .count();
 
-                    // Tính phần trăm trùng khớp
-                    double matchPercentage = (double) matchCount / totalIngredients * 100;
+                    System.out.println("Match count: " + matchCount);
 
-                    // Trả về DishResponse nếu trùng > 50%, null nếu không
-                    if(matchPercentage > 50){
+                    if(matchCount > 0){
                         Optional<DishRestaurant> dishRestaurant = dishRestaurantRepository
                                 .findByDish_IdAndRestaurant_Id(d.getId(), restaurantId);
                         if(dishRestaurant.isPresent()){

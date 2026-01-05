@@ -2,6 +2,7 @@ package com.ITSS.ITSS_NIHONGO.service;
 
 import com.ITSS.ITSS_NIHONGO.Iservice.IFavourite;
 import com.ITSS.ITSS_NIHONGO.dto.request.Favourite.AddFavourite;
+import com.ITSS.ITSS_NIHONGO.dto.request.Favourite.DeleteFavorite;
 import com.ITSS.ITSS_NIHONGO.dto.response.Favourite.FavouriteResponse;
 import com.ITSS.ITSS_NIHONGO.model.Dishes;
 import com.ITSS.ITSS_NIHONGO.model.Favourite;
@@ -76,35 +77,74 @@ public class FavouriteService implements IFavourite {
 
     @Override
     public boolean addFavourite(int userId, AddFavourite addFavourite) {
+        // Kiểm tra favourite đã tồn tại
         Favourite favourite = favouriteRepository.findByUser_IdAndDish_Id(userId, addFavourite.dishId);
         if (favourite != null) {
             return false;
         }
+
+        // Validate user
         Users users = userRepository.findById(userId).orElse(null);
         if (users == null) {
             return false;
         }
+
+        // Validate dish
         Dishes dishes = dishRepository.findById(addFavourite.dishId).orElse(null);
         if (dishes == null) {
             return false;
         }
+
+        // Xử lý restaurant (có thể null)
+        Restaurant restaurant = null;
+        if (addFavourite.restaurantId != null && addFavourite.restaurantId > 0) {
+            restaurant = restaurantRepository.findById(addFavourite.restaurantId).orElse(null);
+        }
+
+        // Tạo Favourite object MỘT LẦN (bên ngoài if-else)
         Favourite newFavourite = Favourite.builder()
                 .user(users)
                 .dish(dishes)
-                .restaurant(null)
+                .restaurant(restaurant) // null hoặc có giá trị đều được
                 .createdAt(java.time.LocalDateTime.now())
                 .build();
+
         favouriteRepository.save(newFavourite);
         return true;
     }
 
     @Override
-    public boolean deleteFavourite(int favouriteId) {
-        Favourite favourite = favouriteRepository.findById(favouriteId).orElse(null);
-        if (favourite == null) {
+    public boolean deleteFavourite(int userId,DeleteFavorite deleteFavorite) {
+        Favourite favourite = null; // Cần thêm userId vào DeleteFavorite
+
+        try {
+            // Trường hợp 1: favoriteId không rỗng
+            if (deleteFavorite.favoriteId != null && deleteFavorite.favoriteId > 0) {
+                favourite = favouriteRepository.findById(deleteFavorite.favoriteId).orElse(null);
+            }
+            // Trường hợp 3: dishId và restaurantId không rỗng
+            else if (deleteFavorite.dishId != null && deleteFavorite.dishId > 0
+                    && deleteFavorite.restaurantId != null && deleteFavorite.restaurantId > 0) {
+                favourite = favouriteRepository.findByUserIdAndDishIdAndRestaurantId(
+                    userId, deleteFavorite.dishId, deleteFavorite.restaurantId
+                ).orElse(null);
+            }
+            // Trường hợp 2: chỉ dishId không rỗng
+            else if (deleteFavorite.dishId != null && deleteFavorite.dishId > 0) {
+                favourite = favouriteRepository.findByUserIdAndDishIdAndRestaurantIsNull(
+                    userId, deleteFavorite.dishId
+                ).orElse(null);
+            }
+
+            if (favourite == null) {
+                return false;
+            }
+
+            favouriteRepository.delete(favourite);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
-        favouriteRepository.delete(favourite);
-        return true;
     }
 }
